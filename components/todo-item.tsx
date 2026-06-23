@@ -1,0 +1,97 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { XIcon } from "@phosphor-icons/react";
+import type { Todo } from "@/lib/types";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+
+interface TodoItemProps {
+  todo: Todo;
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
+  onEdit: (id: string, text: string) => void;
+}
+
+export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(todo.text);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editing]);
+
+  function startEditing() {
+    setDraft(todo.text);
+    setEditing(true);
+  }
+
+  function commit() {
+    setEditing(false);
+    onEdit(todo.id, draft);
+  }
+
+  function cancel() {
+    setEditing(false);
+    setDraft(todo.text);
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      commit();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      cancel();
+    }
+  }
+
+  return (
+    <li className="flex items-center gap-3 rounded-md border border-border px-3 py-2">
+      <Checkbox
+        checked={todo.completed}
+        onCheckedChange={() => onToggle(todo.id)}
+        aria-label={todo.completed ? "완료 취소" : "완료로 표시"}
+      />
+
+      {editing ? (
+        <Input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={commit}
+          className="h-7 flex-1"
+          aria-label="할 일 편집"
+        />
+      ) : (
+        <span
+          onDoubleClick={startEditing}
+          className={cn(
+            "flex-1 cursor-pointer break-words",
+            todo.completed && "text-muted-foreground line-through"
+          )}
+        >
+          {todo.text}
+        </span>
+      )}
+
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+        onClick={() => onDelete(todo.id)}
+        aria-label="삭제"
+      >
+        <XIcon />
+      </Button>
+    </li>
+  );
+}
