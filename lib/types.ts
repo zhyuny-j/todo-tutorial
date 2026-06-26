@@ -1,5 +1,41 @@
+export type Priority = "high" | "medium" | "low";
+
 export interface Todo {
   id: string;
   text: string;
   completed: boolean;
+  priority: Priority;
 }
+
+export const DEFAULT_PRIORITY: Priority = "medium";
+
+export interface PriorityMeta {
+  value: Priority;
+  label: string;
+  /** 목록 뱃지에 적용할 Tailwind 색상 클래스 */
+  badgeClass: string;
+}
+
+// 우선순위 목록(높음 → 낮음 순). 선택 UI와 뱃지가 공유한다.
+export const PRIORITIES: PriorityMeta[] = [
+  {
+    value: "high",
+    label: "높음",
+    badgeClass: "border-destructive/30 bg-destructive/10 text-destructive",
+  },
+  {
+    value: "medium",
+    label: "보통",
+    badgeClass:
+      "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-500",
+  },
+  {
+    value: "low",
+    label: "낮음",
+    badgeClass: "border-border bg-muted text-muted-foreground",
+  },
+];
+
+export const PRIORITY_META: Record<Priority, PriorityMeta> = Object.fromEntries(
+  PRIORITIES.map((meta) => [meta.value, meta])
+) as Record<Priority, PriorityMeta>;

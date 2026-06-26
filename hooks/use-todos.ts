@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Todo } from "@/lib/types";
+import { DEFAULT_PRIORITY, type Priority, type Todo } from "@/lib/types";
 
 const STORAGE_KEY = "todos";
 
@@ -14,9 +14,18 @@ export function useTodos() {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
+        // priority 도입 이전에 저장된 데이터와의 호환을 위해 기본값으로 보정
+        const parsed = JSON.parse(stored) as (Omit<Todo, "priority"> & {
+          priority?: Priority;
+        })[];
         // 마운트 후 localStorage 값으로 동기화 — hydration mismatch 방지를 위해 의도적으로 effect에서 설정
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setTodos(JSON.parse(stored) as Todo[]);
+        setTodos(
+          parsed.map((todo) => ({
+            ...todo,
+            priority: todo.priority ?? DEFAULT_PRIORITY,
+          }))
+        );
       }
     } catch {
       // 파싱 실패 시 빈 목록 유지
@@ -30,13 +39,14 @@ export function useTodos() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }, [todos, loaded]);
 
-  function addTodo(text: string) {
+  function addTodo(text: string, priority: Priority = DEFAULT_PRIORITY) {
     const trimmed = text.trim();
     if (!trimmed) return;
     const todo: Todo = {
       id: crypto.randomUUID(),
       text: trimmed,
       completed: false,
+      priority,
     };
     setTodos((prev) => [todo, ...prev]);
   }

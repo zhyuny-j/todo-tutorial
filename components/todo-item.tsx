@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { XIcon } from "@phosphor-icons/react";
-import type { Todo } from "@/lib/types";
+import { DEFAULT_PRIORITY, PRIORITY_META, type Todo } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -52,6 +52,8 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
     }
   }
 
+  const priority = PRIORITY_META[todo.priority] ?? PRIORITY_META[DEFAULT_PRIORITY];
+
   return (
     <li className="flex items-center gap-3 rounded-md border border-border px-3 py-2">
       <Checkbox
@@ -81,6 +83,15 @@ export function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
           {todo.text}
         </span>
       )}
+
+      <span
+        className={cn(
+          "shrink-0 rounded-full border px-2 py-0.5 text-[0.625rem] font-medium leading-none",
+          priority.badgeClass
+        )}
+      >
+        {priority.label}
+      </span>
 
       <Button
         type="button"

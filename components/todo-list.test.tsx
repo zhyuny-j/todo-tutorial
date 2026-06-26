@@ -71,6 +71,28 @@ describe("TodoList 검증 체크리스트", () => {
     ).toBeInTheDocument();
   });
 
+  it("6. 우선순위(높음) 선택 후 추가 → 목록에 우선순위가 표시됨", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+
+    await user.click(screen.getByRole("radio", { name: "높음" }));
+    await addTodo(user, "장보기");
+
+    const item = await screen.findByRole("listitem");
+    expect(item).toHaveTextContent("장보기");
+    expect(item).toHaveTextContent("높음");
+  });
+
+  it("7. 우선순위 미선택 시 기본값(보통)으로 추가됨", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+
+    await addTodo(user, "장보기");
+
+    const item = await screen.findByRole("listitem");
+    expect(item).toHaveTextContent("보통");
+  });
+
   it("5. 페이지 새로고침 → 기존 목록 유지", async () => {
     const user = userEvent.setup();
 

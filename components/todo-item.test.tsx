@@ -4,7 +4,13 @@ import type { Todo } from "@/lib/types";
 import { TodoItem } from "@/components/todo-item";
 
 function makeTodo(overrides: Partial<Todo> = {}): Todo {
-  return { id: "1", text: "테스트 할 일", completed: false, ...overrides };
+  return {
+    id: "1",
+    text: "테스트 할 일",
+    completed: false,
+    priority: "medium",
+    ...overrides,
+  };
 }
 
 describe("TodoItem", () => {
@@ -53,6 +59,19 @@ describe("TodoItem", () => {
     await user.click(screen.getByRole("button", { name: "삭제" }));
 
     expect(onDelete).toHaveBeenCalledExactlyOnceWith("abc");
+  });
+
+  it("우선순위 라벨을 뱃지로 표시한다", () => {
+    render(
+      <TodoItem
+        todo={makeTodo({ priority: "high" })}
+        onToggle={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("높음")).toBeInTheDocument();
   });
 
   it("완료된 할 일은 취소선 스타일을 가진다", () => {
