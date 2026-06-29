@@ -9,6 +9,8 @@ export interface Todo {
   createdAt: number;
   /** 마감일 "YYYY-MM-DD". 지정하지 않으면 undefined. */
   dueDate?: string;
+  /** 카테고리 태그. 지정하지 않으면 undefined. */
+  category?: Category;
 }
 
 export const DEFAULT_PRIORITY: Priority = "medium";
@@ -43,6 +45,42 @@ export const PRIORITIES: PriorityMeta[] = [
 export const PRIORITY_META: Record<Priority, PriorityMeta> = Object.fromEntries(
   PRIORITIES.map((meta) => [meta.value, meta])
 ) as Record<Priority, PriorityMeta>;
+
+export type Category = "work" | "personal" | "shopping";
+
+export interface CategoryMeta {
+  value: Category;
+  label: string;
+  /** 목록 뱃지에 적용할 Tailwind 색상 클래스 */
+  badgeClass: string;
+}
+
+// 카테고리 목록. 선택 UI와 뱃지, 필터가 공유한다.
+export const CATEGORIES: CategoryMeta[] = [
+  {
+    value: "work",
+    label: "업무",
+    badgeClass:
+      "border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  },
+  {
+    value: "personal",
+    label: "개인",
+    badgeClass:
+      "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    value: "shopping",
+    label: "쇼핑",
+    badgeClass:
+      "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+  },
+];
+
+export const CATEGORY_META: Record<Category, CategoryMeta> =
+  Object.fromEntries(
+    CATEGORIES.map((meta) => [meta.value, meta])
+  ) as Record<Category, CategoryMeta>;
 
 // 목록 정렬 기준. localStorage에 저장하지 않는 화면 표시용 상태.
 export type SortBy = "created" | "name" | "due";

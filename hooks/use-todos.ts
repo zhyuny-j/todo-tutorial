@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DEFAULT_PRIORITY, type Priority, type Todo } from "@/lib/types";
+import {
+  DEFAULT_PRIORITY,
+  type Category,
+  type Priority,
+  type Todo,
+} from "@/lib/types";
 
 const STORAGE_KEY = "todos";
 
@@ -50,7 +55,8 @@ export function useTodos() {
   function addTodo(
     text: string,
     priority: Priority = DEFAULT_PRIORITY,
-    dueDate?: string
+    dueDate?: string,
+    category?: Category
   ) {
     const trimmed = text.trim();
     if (!trimmed) return;
@@ -61,6 +67,7 @@ export function useTodos() {
       priority,
       createdAt: Date.now(),
       dueDate: dueDate || undefined,
+      category,
     };
     setTodos((prev) => [todo, ...prev]);
   }

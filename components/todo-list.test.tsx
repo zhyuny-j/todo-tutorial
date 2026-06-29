@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TodoList } from "@/components/todo-list";
 
@@ -323,5 +323,21 @@ describe("Todo 검색", () => {
 
     await user.clear(search);
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+});
+
+describe("Todo 카테고리 태그", () => {
+  it("'업무' 태그를 지정해 추가 → 목록에 태그가 표시된다", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+
+    // 입력 폼의 카테고리 그룹에서 '업무'를 선택(필터 그룹과 이름이 겹치므로 그룹으로 한정)
+    const categoryGroup = screen.getByRole("radiogroup", { name: "카테고리" });
+    await user.click(within(categoryGroup).getByRole("radio", { name: "업무" }));
+    await addTodo(user, "보고서 작성");
+
+    const item = await screen.findByRole("listitem");
+    expect(item).toHaveTextContent("보고서 작성");
+    expect(item).toHaveTextContent("업무");
   });
 });

@@ -113,4 +113,32 @@ describe("TodoItem", () => {
 
     expect(screen.queryByText("2026-07-01")).not.toBeInTheDocument();
   });
+
+  it("카테고리가 있으면 태그를 표시한다", () => {
+    render(
+      <TodoItem
+        todo={makeTodo({ category: "work" })}
+        onToggle={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("업무")).toBeInTheDocument();
+  });
+
+  it("카테고리가 없으면 태그를 표시하지 않는다", () => {
+    render(
+      <TodoItem
+        todo={makeTodo()}
+        onToggle={vi.fn()}
+        onDelete={vi.fn()}
+        onEdit={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByText("업무")).not.toBeInTheDocument();
+    expect(screen.queryByText("개인")).not.toBeInTheDocument();
+    expect(screen.queryByText("쇼핑")).not.toBeInTheDocument();
+  });
 });

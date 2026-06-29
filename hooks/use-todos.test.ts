@@ -105,3 +105,25 @@ describe("useTodos 마감일", () => {
     expect(typeof result.current.todos[0].createdAt).toBe("number");
   });
 });
+
+describe("useTodos 카테고리", () => {
+  it("addTodo에 전달한 카테고리로 추가한다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("보고서", "medium", undefined, "work");
+    });
+
+    expect(result.current.todos[0].category).toBe("work");
+  });
+
+  it("카테고리를 생략하면 category 없이 추가한다", () => {
+    const { result } = renderHook(() => useTodos());
+
+    act(() => {
+      result.current.addTodo("청소");
+    });
+
+    expect(result.current.todos[0].category).toBeUndefined();
+  });
+});
