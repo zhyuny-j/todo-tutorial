@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TodoList } from "@/components/todo-list";
 
@@ -11,6 +11,19 @@ beforeEach(() => {
 
 // 입력 필드에 텍스트를 입력하고 Enter로 제출하는 헬퍼
 async function addTodo(user: ReturnType<typeof userEvent.setup>, text: string) {
+  const input = screen.getByRole("textbox", { name: "새 할 일" });
+  await user.type(input, `${text}{Enter}`);
+}
+
+// 마감일을 지정해 추가하는 헬퍼
+async function addTodoWithDue(
+  user: ReturnType<typeof userEvent.setup>,
+  text: string,
+  due: string
+) {
+  fireEvent.change(screen.getByLabelText("마감일"), {
+    target: { value: due },
+  });
   const input = screen.getByRole("textbox", { name: "새 할 일" });
   await user.type(input, `${text}{Enter}`);
 }
@@ -238,5 +251,44 @@ describe("Todo 정렬", () => {
     expect(items[0]).toHaveTextContent("세번째");
     expect(items[1]).toHaveTextContent("두번째");
     expect(items[2]).toHaveTextContent("첫번째");
+  });
+
+  it("'마감일순' 선택 → 마감일 가까운 항목부터 표시된다", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+    await addTodoWithDue(user, "먼일", "2026-07-10");
+    await addTodoWithDue(user, "가까운일", "2026-07-01");
+    await addTodoWithDue(user, "중간일", "2026-07-05");
+    await screen.findByText("중간일");
+
+    await user.click(screen.getByRole("radio", { name: "마감일순" }));
+
+    const items = screen.getAllByRole("listitem");
+    expect(items[0]).toHaveTextContent("가까운일");
+    expect(items[1]).toHaveTextContent("중간일");
+    expect(items[2]).toHaveTextContent("먼일");
+  });
+
+  it("'마감일순' 선택 → 마감일 없는 항목 2개는 맨 뒤에 표시된다", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+    await addTodoWithDue(user, "마감1", "2026-07-03");
+    await addTodo(user, "없음1");
+    await addTodoWithDue(user, "마감2", "2026-07-01");
+    await addTodo(user, "없음2");
+    await addTodoWithDue(user, "마감3", "2026-07-02");
+    await screen.findByText("마감3");
+
+    await user.click(screen.getByRole("radio", { name: "마감일순" }));
+
+    const items = screen.getAllByRole("listitem");
+    expect(items).toHaveLength(5);
+    // 앞 3개: 마감일 있는 항목(가까운 순)
+    expect(items[0]).toHaveTextContent("마감2"); // 07-01
+    expect(items[1]).toHaveTextContent("마감3"); // 07-02
+    expect(items[2]).toHaveTextContent("마감1"); // 07-03
+    // 뒤 2개: 마감일 없는 항목
+    expect(items[3]).toHaveTextContent("없음");
+    expect(items[4]).toHaveTextContent("없음");
   });
 });

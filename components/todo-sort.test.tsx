@@ -10,6 +10,9 @@ describe("TodoSort", () => {
       screen.getByRole("radio", { name: "생성일순" })
     ).toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "이름순" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "마감일순" })
+    ).toBeInTheDocument();
   });
 
   it("현재 정렬 옵션만 선택 상태로 표시된다", () => {

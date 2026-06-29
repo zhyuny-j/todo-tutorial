@@ -45,11 +45,12 @@ export const PRIORITY_META: Record<Priority, PriorityMeta> = Object.fromEntries(
 ) as Record<Priority, PriorityMeta>;
 
 // 목록 정렬 기준. localStorage에 저장하지 않는 화면 표시용 상태.
-export type SortBy = "created" | "name";
+export type SortBy = "created" | "name" | "due";
 
 export const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: "created", label: "생성일순" },
   { value: "name", label: "이름순" },
+  { value: "due", label: "마감일순" },
 ];
 
 // 목록 표시 필터. URL/localStorage에 저장하지 않는 화면 표시용 상태.
