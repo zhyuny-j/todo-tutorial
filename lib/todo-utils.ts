@@ -24,3 +24,13 @@ export function sortTodos(todos: Todo[], sortBy: SortBy): Todo[] {
   }
   return sorted;
 }
+
+/**
+ * 제목에 검색어가 포함되는지 검사한다(대소문자 무시).
+ * 검색어가 비어 있으면(공백 포함) 항상 true를 반환한다.
+ */
+export function matchesSearch(todo: Todo, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return todo.text.toLowerCase().includes(q);
+}

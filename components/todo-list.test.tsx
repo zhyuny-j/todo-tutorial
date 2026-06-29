@@ -292,3 +292,36 @@ describe("Todo 정렬", () => {
     expect(items[4]).toHaveTextContent("없음");
   });
 });
+
+describe("Todo 검색", () => {
+  it("'회의' 검색 → '회의' 포함 항목만 표시된다", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+    await addTodo(user, "회의 준비");
+    await addTodo(user, "장보기");
+    await addTodo(user, "팀 회의");
+    await screen.findByText("팀 회의");
+
+    await user.type(screen.getByRole("searchbox", { name: "검색" }), "회의");
+
+    expect(screen.getByText("회의 준비")).toBeInTheDocument();
+    expect(screen.getByText("팀 회의")).toBeInTheDocument();
+    expect(screen.queryByText("장보기")).not.toBeInTheDocument();
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+
+  it("검색어를 지우면 전체 목록이 복원된다", async () => {
+    const user = userEvent.setup();
+    render(<TodoList />);
+    await addTodo(user, "회의 준비");
+    await addTodo(user, "장보기");
+    await screen.findByText("장보기");
+
+    const search = screen.getByRole("searchbox", { name: "검색" });
+    await user.type(search, "회의");
+    expect(screen.getAllByRole("listitem")).toHaveLength(1);
+
+    await user.clear(search);
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  });
+});

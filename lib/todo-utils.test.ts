@@ -1,5 +1,5 @@
 import type { Todo } from "@/lib/types";
-import { sortTodos } from "@/lib/todo-utils";
+import { matchesSearch, sortTodos } from "@/lib/todo-utils";
 
 function makeTodo(overrides: Partial<Todo> = {}): Todo {
   return {
@@ -72,5 +72,26 @@ describe("sortTodos", () => {
     sortTodos(todos, "created");
 
     expect(todos.map((t) => t.id)).toEqual(snapshot);
+  });
+});
+
+describe("matchesSearch", () => {
+  it("제목에 검색어가 포함되면 true", () => {
+    expect(matchesSearch(makeTodo({ text: "팀 회의 준비" }), "회의")).toBe(true);
+  });
+
+  it("제목에 검색어가 없으면 false", () => {
+    expect(matchesSearch(makeTodo({ text: "장보기" }), "회의")).toBe(false);
+  });
+
+  it("대소문자를 구분하지 않는다", () => {
+    expect(matchesSearch(makeTodo({ text: "Daily Standup" }), "standup")).toBe(
+      true
+    );
+  });
+
+  it("빈 검색어(공백 포함)는 모든 항목을 통과시킨다", () => {
+    expect(matchesSearch(makeTodo({ text: "장보기" }), "   ")).toBe(true);
+    expect(matchesSearch(makeTodo({ text: "장보기" }), "")).toBe(true);
   });
 });
