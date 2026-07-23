@@ -14,7 +14,7 @@ export default function Page() {
         <div>
           {title}
           <p className="font-mono text-xs text-muted-foreground">
-            (Press <kbd>d</kbd> to toggle dark mode)
+            눈이 편안해지고 싶다면 <kbd>d</kbd>를 눌러 다크모드를 켜보세요 🌙
           </p>
         </div>
         <TodoList />
